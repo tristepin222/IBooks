@@ -179,7 +179,7 @@ class AddActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
     private fun updateDateInViewEnd() {
         val myFormat = "MM/dd/yyyy" // mention the format you need
-        val sdf = SimpleDateFormat(myFormat, Locale.JAPAN)
+        val sdf =SimpleDateFormat (myFormat, Locale.JAPAN)
         binding.datepickerend.setText(sdf.format(cal.time))
     }
     fun openCamera() {
