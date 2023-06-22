@@ -5,6 +5,8 @@ import android.hardware.camera2.CameraCharacteristics
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ibooks.databinding.ActivityMainBinding
 
@@ -43,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         val enddates = ArrayList<String>()
         val users = ArrayList<String>()
         val booksid =  ArrayList<Int>()
+        val ids = ArrayList<Int>()
         pivot.forEach{
             startdates.add(it.startdate)
             enddates.add(it.enddate)
@@ -50,10 +53,11 @@ class MainActivity : AppCompatActivity() {
             users.add(it.contactName)
         }
         books.forEach {
+            ids.add(it.id)
             names.add(it.bookName)
             descriptions.add(it.description)
         }
-        val myListAdapter = BooksAdapter(this,names.toTypedArray(),startdates.toTypedArray(),enddates.toTypedArray(), users.toTypedArray(), booksid.toTypedArray(),descriptions.toTypedArray())
+        val myListAdapter = BooksAdapter(this,ids.toTypedArray(),names.toTypedArray(),startdates.toTypedArray(),enddates.toTypedArray(), users.toTypedArray(), booksid.toTypedArray(),descriptions.toTypedArray())
 
         binding.listview.adapter = myListAdapter
 
