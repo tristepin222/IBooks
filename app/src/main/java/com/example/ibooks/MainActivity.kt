@@ -12,23 +12,12 @@ import com.example.ibooks.activities.AddActivity
 import com.example.ibooks.databinding.ActivityMainBinding
 
 
-/*
- * Defines an array that contains column names to move from
- * the Cursor to the ListView.
- */
-
-/*
- * Defines an array that contains resource ids for the layout views
- * that get the Cursor column contents. The id is pre-defined in
- * the Android framework, so it is prefaced with "android.R.id"
- */
 
 
 class MainActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivityMainBinding
-    val REQUEST_IMAGE_CAPTURE = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBar?.hide()
@@ -86,7 +75,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun openCamera() {
+    private fun openCamera() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1 && Build.VERSION.SDK_INT < Build.VERSION_CODES.O -> {

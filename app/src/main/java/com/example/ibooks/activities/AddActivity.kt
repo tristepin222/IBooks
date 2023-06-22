@@ -93,10 +93,7 @@ class AddActivity : AppCompatActivity() {
         binding.floatingButton.setOnClickListener { openCamera() }
         bottomAppBar.setNavigationOnClickListener { startActivity(Intent(this, MainActivity::class.java)) }
 
-        // below line is to add on click listener for our add course button.
-
-        // below line is to add on click listener for our add course button.
-        binding.addButton.setOnClickListener(View.OnClickListener { // below line is to get data from all edit text fields.
+        binding.addButton.setOnClickListener(View.OnClickListener {
             var bookName: String = binding.bookName.text.toString()
             var description: String = binding.description.text.toString()
             var isbn: String = binding.isbn.text.toString()
@@ -107,9 +104,6 @@ class AddActivity : AppCompatActivity() {
                 return@OnClickListener
             }
 
-            // on below line we are calling a method to add new
-            // course to sqlite data and pass all our values to it.
-            // after adding the data we are displaying a toast message.
             Toast.makeText(this@AddActivity, "Book has been added.", Toast.LENGTH_SHORT).show()
             bookName = ""
             description = ""
@@ -252,9 +246,11 @@ class AddActivity : AppCompatActivity() {
                 val cursor1: Cursor
                 val cursor2: Cursor?
 
-                //get data from intent
+
                 val uri = data!!.data
                 cursor1 = contentResolver.query(uri!!, null, null, null, null)!!
+
+                //get all the data from the view and call add new book or update book depending if the mode is on update or not
                 if (cursor1.moveToFirst()){
                     val dbHandler = DBhandler(this@AddActivity)
                     val bookName: String = binding.bookName.text.toString()
