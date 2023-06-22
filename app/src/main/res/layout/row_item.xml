@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/grid"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -14,7 +15,8 @@
         android:layout_rowSpan="2"
         android:layout_column="0"
         android:contentDescription="@string/title_activity_add"
-        android:scaleType="fitXY" />
+        android:scaleType="fitXY"
+        app:srcCompat="@drawable/le_petit_livre_bleu_v2_500_1" />
 
     <TextView
         android:layout_width="wrap_content"
