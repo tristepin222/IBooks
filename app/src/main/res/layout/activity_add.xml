@@ -26,7 +26,9 @@
             android:layout_height="73dp"
             android:layout_row="0"
             android:layout_column="0"
-            android:layout_columnSpan="2" />
+            android:layout_columnSpan="2"
+            app:srcCompat="@drawable/le_petit_livre_bleu_v2_500_1"
+            tools:srcCompat="@drawable/le_petit_livre_bleu_v2_500_1" />
         <EditText
             android:id="@+id/bookName"
             android:layout_width="match_parent"
@@ -91,7 +93,7 @@
             android:textAllCaps="false" />
 
         <Button
-            android:id="@+id/addButton2"
+            android:id="@+id/takeButton"
             android:layout_width="178dp"
             android:layout_height="wrap_content"
             android:layout_row="5"
