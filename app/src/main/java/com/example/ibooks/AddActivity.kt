@@ -1,5 +1,6 @@
 package com.example.ibooks
 
+import BookClass
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
@@ -14,7 +15,6 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.view.View
-import android.widget.DatePicker
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -42,9 +42,11 @@ class AddActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddBinding
     @RequiresApi(Build.VERSION_CODES.N)
     var cal = Calendar.getInstance()
-
+    var updateMode = false
+    var bookid = 0
     //contact permission code
-    private val CONTACT_PERMISSION_CODE = 1;
+    private val CONTACT_PERMISSION_CODE = 1
+
     //contact pick code
     private val CONTACT_PICK_CODE = 2
     @RequiresApi(Build.VERSION_CODES.N)
@@ -64,10 +66,30 @@ class AddActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        val extras = intent.extras
+        if (extras != null) {
+            updateMode = extras.getBoolean("update")
+            bookid = extras.getInt("bookid")
+        }
+        val dbHandler = DBhandler(this@AddActivity)
+        if(updateMode){
+            val book = dbHandler.getABook(bookid)
+            val pivot = dbHandler.getAPivotFromBook(bookid)
+            if(book != null) {
+                binding.bookName.setText(book.bookName)
+                binding.description.setText(book.description)
+                binding.isbn.setText(book.isbn)
+            }
+            if(pivot != null){
+                binding.datepickerstart.setText(pivot.startdate)
+                binding.datepickerend.setText(pivot.enddate)
+            }
+        }
+
         binding.floatingButton.setOnClickListener { openCamera() }
         bottomAppBar.setNavigationOnClickListener { startActivity(Intent(this, MainActivity::class.java)) }
 
-        val dbHandler = DBhandler(this@AddActivity)
         // below line is to add on click listener for our add course button.
 
         // below line is to add on click listener for our add course button.
@@ -134,19 +156,31 @@ class AddActivity : AppCompatActivity() {
                 cal.get(Calendar.DAY_OF_MONTH)
             ).show()
         }
+        binding.takeButton.setOnClickListener {
+            if(updateMode) {
+                val db = DBhandler(this@AddActivity)
+                db.deleteBook(binding.bookName.text.toString())
+            }
+            startActivity(
+                Intent(
+                    this,
+                    MainActivity::class.java
+                )
+            )
+        }
         setContentView(view)
     }
     @RequiresApi(Build.VERSION_CODES.N)
     private fun updateDateInView() {
         val myFormat = "MM/dd/yyyy" // mention the format you need
         val sdf = SimpleDateFormat(myFormat, Locale.JAPAN)
-        binding.datepickerstart.setText(sdf.format(cal.getTime()))
+        binding.datepickerstart.setText(sdf.format(cal.time))
     }
     @RequiresApi(Build.VERSION_CODES.N)
     private fun updateDateInViewEnd() {
         val myFormat = "MM/dd/yyyy" // mention the format you need
         val sdf = SimpleDateFormat(myFormat, Locale.JAPAN)
-        binding.datepickerend.setText(sdf.format(cal.getTime()))
+        binding.datepickerend.setText(sdf.format(cal.time))
     }
     fun openCamera() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -228,11 +262,26 @@ class AddActivity : AppCompatActivity() {
                     //get contact details
                     val contactId = cursor1.getInt(cursor1.getColumnIndex(ContactsContract.Contacts._ID))
                     val contactName = cursor1.getString(cursor1.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
-                    dbHandler.addNewBook(bookName, description, isbn, contact_name = contactName, idContact = contactId, startDate = startDate, endDate = endDate)
-                    //set details: contact id, contact name, image
-                    //set image, first check if uri/thumbnail is not null
+                    if(updateMode){
 
-                    //check if contact has a phone number or not
+                        val book = BookClass(bookid,bookName, description, isbn)
+                        dbHandler.updateBook(book,
+                            contact_name = contactName,
+                            idContact = contactId,
+                            startDate = startDate,
+                            endDate = endDate)
+                    }else {
+                        dbHandler.addNewBook(
+                            bookName,
+                            description,
+                            isbn,
+                            contact_name = contactName,
+                            idContact = contactId,
+                            startDate = startDate,
+                            endDate = endDate
+                        )
+
+                    }
                     cursor1.close()
                 }
             }
