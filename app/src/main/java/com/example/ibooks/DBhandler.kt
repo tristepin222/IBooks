@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 
 
-class DBhandler(context: Context): SQLiteOpenHelper(context,DB_NAME,null,DB_VERSION) {
+class DBhandler(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
     companion object {
         private val DB_NAME = "Ibooks"
 
@@ -44,18 +44,14 @@ class DBhandler(context: Context): SQLiteOpenHelper(context,DB_NAME,null,DB_VERS
 
     // below method is for creating a database by running a sqlite query
     override fun onCreate(db: SQLiteDatabase) {
-        // on below line we are creating
-        // an sqlite query and we are
-        // setting our column names
-        // along with their data types.
+
         var query = ("CREATE TABLE " + TABLE_NAME + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + NAME_COL + " TEXT,"
                 + DESCRIPTION_COL + " TEXT,"
                 + ISBN_COL + " TEXT)")
 
-        // at last we are calling a exec sql
-        // method to execute above sql query
+
         db.execSQL(query)
 
         query = ("CREATE TABLE " + TABLE_PIVOT + " ("
@@ -67,8 +63,7 @@ class DBhandler(context: Context): SQLiteOpenHelper(context,DB_NAME,null,DB_VERS
                 + CONTACT_NAME + " TEXT,"
                 + "FOREIGN KEY(" + BOOKS_ID_COL + ") REFERENCES artist(" + ID_COL + "))")
 
-        // at last we are calling a exec sql
-        // method to execute above sql query
+
         db.execSQL(query)
     }
 
@@ -83,32 +78,25 @@ class DBhandler(context: Context): SQLiteOpenHelper(context,DB_NAME,null,DB_VERS
         endDate: String?,
     ) {
 
-        // on below line we are creating a variable for
-        // our sqlite database and calling writable method
-        // as we are writing data in our database.
+
         val db = this.writableDatabase
 
-        // on below line we are creating a
-        // variable for content values.
         val values = ContentValues()
         val valuesPivot = ContentValues()
-        // on below line we are passing all values
-        // along with its key and value pair.
+
         values.put(NAME_COL, bookName)
         values.put(DESCRIPTION_COL, description)
         values.put(ISBN_COL, isbn)
-        // after adding all values we are passing
-        // content values to our table.
+
 
         var id: Long = db.insert(TABLE_NAME, null, values)
         valuesPivot.put(ID_CONTACTS_COL, idContact)
         valuesPivot.put(RENT_DATE_COL, startDate)
         valuesPivot.put(END_DATE_COL, endDate)
-        valuesPivot.put(BOOKS_ID_COL,id)
+        valuesPivot.put(BOOKS_ID_COL, id)
         valuesPivot.put(CONTACT_NAME, contact_name)
         db.insert(TABLE_PIVOT, null, valuesPivot)
-        // at last we are closing our
-        // database after adding database.
+
         db.close()
     }
 
@@ -117,15 +105,16 @@ class DBhandler(context: Context): SQLiteOpenHelper(context,DB_NAME,null,DB_VERS
         db.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
         onCreate(db)
     }
+
     @SuppressLint("Recycle", "Range")
-    fun viewBooks():List<BookClass>{
-        val empList:ArrayList<BookClass> = ArrayList<BookClass>()
+    fun viewBooks(): List<BookClass> {
+        val empList: ArrayList<BookClass> = ArrayList<BookClass>()
         val selectQuery = "SELECT  * FROM $TABLE_NAME"
         val db = this.readableDatabase
         var cursor: Cursor? = null
-        try{
+        try {
             cursor = db.rawQuery(selectQuery, null)
-        }catch (e: SQLiteException) {
+        } catch (e: SQLiteException) {
             db.execSQL(selectQuery)
             return ArrayList()
         }
@@ -140,36 +129,50 @@ class DBhandler(context: Context): SQLiteOpenHelper(context,DB_NAME,null,DB_VERS
                 bookName = cursor.getString(cursor.getColumnIndex("name"))
                 description = cursor.getString(cursor.getColumnIndex("description"))
                 isbn = cursor.getString(cursor.getColumnIndex("isbn"))
-                val emp= BookClass(id = Id, bookName = bookName, description = description, isbn = isbn)
+                val emp =
+                    BookClass(id = Id, bookName = bookName, description = description, isbn = isbn)
                 empList.add(emp)
             } while (cursor.moveToNext())
         }
         return empList
     }
+
     //method to update data
-    fun updateBook(emp: BookClass):Int{
+    fun updateBook(
+        book: BookClass,
+        idContact: Int?,
+        contact_name: String?,
+        startDate: String?,
+        endDate: String?,
+    ): Int {
         val db = this.writableDatabase
         val values = ContentValues()
-        values.put(ID_COL, emp.id)
-        values.put(NAME_COL, emp.bookName)
-        values.put(DESCRIPTION_COL, emp.description)
-        values.put(ISBN_COL, emp.isbn)
-
+        val valuesPivot = ContentValues()
+        values.put(ID_COL, book.id)
+        values.put(NAME_COL, book.bookName)
+        values.put(DESCRIPTION_COL, book.description)
+        values.put(ISBN_COL, book.isbn)
+        valuesPivot.put(ID_CONTACTS_COL, idContact)
+        valuesPivot.put(RENT_DATE_COL, startDate)
+        valuesPivot.put(END_DATE_COL, endDate)
+        valuesPivot.put(BOOKS_ID_COL, book.id)
+        valuesPivot.put(CONTACT_NAME, contact_name)
         // Updating Row
-        val success = db.update(TABLE_NAME, values,"id="+emp.id,null)
-        //2nd argument is String containing nullColumnHack
+        val success = db.update(TABLE_NAME, values, "id=" + book.id, null)
+        db.update(TABLE_PIVOT, valuesPivot, "$BOOKS_ID_COL=" + book.id, null)
         db.close() // Closing database connection
         return success
     }
+
     @SuppressLint("Range", "Recycle")
-    fun getPivot():List<PivotClass>{
-        val empList:ArrayList<PivotClass> = ArrayList<PivotClass>()
+    fun getPivot(): List<PivotClass> {
+        val empList: ArrayList<PivotClass> = ArrayList<PivotClass>()
         val selectQuery = "SELECT  * FROM $TABLE_PIVOT"
         val db = this.readableDatabase
         var cursor: Cursor? = null
-        try{
+        try {
             cursor = db.rawQuery(selectQuery, null)
-        }catch (e: SQLiteException) {
+        } catch (e: SQLiteException) {
             db.execSQL(selectQuery)
             return ArrayList()
         }
@@ -188,11 +191,113 @@ class DBhandler(context: Context): SQLiteOpenHelper(context,DB_NAME,null,DB_VERS
                 idContact = cursor.getInt(cursor.getColumnIndex(ID_CONTACTS_COL))
                 bookId = cursor.getInt(cursor.getColumnIndex(BOOKS_ID_COL))
                 contactName = cursor.getString(cursor.getColumnIndex(CONTACT_NAME))
-                val emp= PivotClass(id = Id, startdate = startdate, enddate = endDate, contactId = idContact, booksId = bookId, contactName = contactName)
+                val emp = PivotClass(
+                    id = Id,
+                    startdate = startdate,
+                    enddate = endDate,
+                    contactId = idContact,
+                    booksId = bookId,
+                    contactName = contactName
+                )
                 empList.add(emp)
             } while (cursor.moveToNext())
         }
         return empList
     }
 
+    @SuppressLint("Range", "Recycle")
+    fun getABook(id: Int): BookClass? {
+        var book: BookClass? = null
+        val selectQuery = "SELECT * FROM $TABLE_NAME WHERE id = $id"
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        try {
+            cursor = db.rawQuery(selectQuery, null)
+        } catch (e: SQLiteException) {
+            db.execSQL(selectQuery)
+            return null
+        }
+        var Id: Int
+        var bookName: String
+        var description: String
+        var isbn: String
+        if (cursor.moveToFirst()) {
+            do {
+
+                Id = cursor.getInt(cursor.getColumnIndex("id"))
+                bookName = cursor.getString(cursor.getColumnIndex("name"))
+                description = cursor.getString(cursor.getColumnIndex("description"))
+                isbn = cursor.getString(cursor.getColumnIndex("isbn"))
+                book =
+                    BookClass(id = Id, bookName = bookName, description = description, isbn = isbn)
+            } while (cursor.moveToNext())
+        }
+        return book
+    }
+
+    @SuppressLint("Range", "Recycle")
+    fun getAPivotFromBook(id: Int): PivotClass? {
+        var pivot: PivotClass? = null
+        val selectQuery = "SELECT * FROM $TABLE_PIVOT WHERE $BOOKS_ID_COL = $id"
+        val db = this.readableDatabase
+        var cursor: Cursor? = null
+        try {
+            cursor = db.rawQuery(selectQuery, null)
+        } catch (e: SQLiteException) {
+            db.execSQL(selectQuery)
+            return null
+        }
+        var Id: Int
+        var startdate: String
+        var endDate: String
+        var contactName: String
+        var idContact: Int
+        var bookId: Int
+        if (cursor.moveToFirst()) {
+            do {
+
+                Id = cursor.getInt(cursor.getColumnIndex("idcontacts_rent_books"))
+                startdate = cursor.getString(cursor.getColumnIndex(RENT_DATE_COL))
+                endDate = cursor.getString(cursor.getColumnIndex(END_DATE_COL))
+                idContact = cursor.getInt(cursor.getColumnIndex(ID_CONTACTS_COL))
+                bookId = cursor.getInt(cursor.getColumnIndex(BOOKS_ID_COL))
+                contactName = cursor.getString(cursor.getColumnIndex(CONTACT_NAME))
+                pivot = PivotClass(
+                    id = Id,
+                    startdate = startdate,
+                    enddate = endDate,
+                    contactId = idContact,
+                    booksId = bookId,
+                    contactName = contactName
+                )
+            } while (cursor.moveToNext())
+        }
+        return pivot
+    }
+    @SuppressLint("Range", "Recycle")
+    fun deleteBook(name: String) {
+        val db = this.writableDatabase
+        var values = ContentValues()
+        //french sentences like "j'adore les frite" has a single quote, which can cause problem with sqlite queries
+        val selectQuery = "SELECT * FROM $TABLE_NAME WHERE $NAME_COL =" + "\"$name\""
+        var cursor: Cursor? = null
+        try {
+            cursor = db.rawQuery(selectQuery, null)
+        } catch (e: SQLiteException) {
+            db.execSQL(selectQuery)
+        }
+        var id: Int = 1
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                do {
+
+                    id = cursor.getInt(cursor.getColumnIndex("id"))
+                } while (cursor.moveToNext())
+            }
+        }
+
+        val stringid = id.toString()
+        db.delete(TABLE_NAME,"$ID_COL=?", Array(1){stringid})
+        db.delete(TABLE_PIVOT,"$BOOKS_ID_COL=?", Array(1){stringid})
+    }
 }
