@@ -5,9 +5,10 @@ import android.hardware.camera2.CameraCharacteristics
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.ibooks.adapters.BooksAdapter
+import com.example.ibooks.db.DBhandler
+import com.example.ibooks.activities.AddActivity
 import com.example.ibooks.databinding.ActivityMainBinding
 
 

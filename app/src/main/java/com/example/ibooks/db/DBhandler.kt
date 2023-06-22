@@ -1,7 +1,7 @@
-package com.example.ibooks
+package com.example.ibooks.db
 
 import BookClass
-import PivotClass
+import com.example.ibooks.classes.PivotClass
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context

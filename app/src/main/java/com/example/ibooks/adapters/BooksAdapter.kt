@@ -1,4 +1,4 @@
-package com.example.ibooks
+package com.example.ibooks.adapters
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
+import com.example.ibooks.R
+import com.example.ibooks.activities.AddActivity
 
 class BooksAdapter(private val context: Activity, private val ids: Array<Int>, private val bookName: Array<String>, private val startDates: Array<String>, private val endDates: Array<String>, private val users: Array<String>, private val booksid: Array<Int>, private val description: Array<String>)
     : ArrayAdapter<String>(context, R.layout.row_item, bookName) {

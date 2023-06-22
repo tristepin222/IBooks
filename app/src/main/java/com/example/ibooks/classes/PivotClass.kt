@@ -1,3 +1,5 @@
+package com.example.ibooks.classes
+
 //creating a Data Model Class
 class PivotClass(
     var id: Int,

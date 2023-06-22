@@ -1,4 +1,4 @@
-package com.example.ibooks
+package com.example.ibooks.activities
 
 import BookClass
 import android.Manifest
@@ -20,6 +20,9 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.ibooks.MainActivity
+import com.example.ibooks.db.DBhandler
+import com.example.ibooks.R
 import com.example.ibooks.databinding.ActivityAddBinding
 import java.util.*
 
